@@ -1,29 +1,26 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+##Procedure
 
-### What is this repository for? ###
+**Note**:
+This source code was developed in Ubuntu 18.04.5 LTS with Python v3.7 and PyTorch v1.12.1.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+1. Clone the repository
 
-### How do I get set up? ###
+	git clone https://wdjang@bitbucket.org/krict-ai/predps.git
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+2. Create and activate a conda environment
 
-### Contribution guidelines ###
+	conda env create -f environment.yaml
+	conda activate predps
 
-* Writing tests
-* Code review
-* Other guidelines
+##Example
 
-### Who do I talk to? ###
+- Run PredPS using sample input file
 
-* Repo owner or admin
-* Other community or team contact
+	python PredPS_pred.py --test_path ./test_input.csv --preds_path output_results.csv 
+
+
+
+
+	
