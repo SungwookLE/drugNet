@@ -1,6 +1,7 @@
 # PredPS #
 
 Source code for our paper "PredPS: attention-based graph neural network for predicting stability of compounds in human plasma"
+
 This code was built based on ChemProp (https://github.com/chemprop/chemprop) and CMPNN (https://github.com/SY575/CMPNN).
 
 
