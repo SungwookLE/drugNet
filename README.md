@@ -1,4 +1,8 @@
-# README #
+# PredPS #
+
+Source code for our paper "PredPS: attention-based graph neural network for predicting stability of compounds in human plasma"
+This code was built based on ChemProp (https://github.com/chemprop/chemprop) and CMPNN (https://github.com/SY575/CMPNN).
+
 
 ##Procedure
 
@@ -12,6 +16,7 @@ This source code was developed in Ubuntu 18.04.5 LTS with Python v3.7 and PyTorc
 2. Create and activate a conda environment
 
 	conda env create -f environment.yaml
+	
 	conda activate predps
 
 ##Example
