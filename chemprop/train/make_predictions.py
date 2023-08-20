@@ -57,7 +57,7 @@ def make_predictions(args: Namespace, smiles: List[str] = None) -> List[Optional
 
     # Predict with each model individually and sum predictions
     if args.dataset_type == 'multiclass':
-        sum_preds = np.zeros((len(test_data), args.num_tasks, args.multiclass_num_classes))
+        sum_preds = np.zeros((len(test_data), args.num_tasks, args.multiclass_num_classes)) ## multi class ? (SW.LEE)
     else:
         sum_preds = np.zeros((len(test_data), args.num_tasks))
     print(f'Predicting with an ensemble of {len(args.checkpoint_paths)} models')

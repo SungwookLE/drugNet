@@ -9,6 +9,7 @@ from chemprop.train import make_predictions
 from chemprop.features import get_available_features_generators
 
 if __name__ == '__main__':
+
     # Predict arguments
     parser = ArgumentParser()
     parser.add_argument('--gpu', type=int,
@@ -48,4 +49,3 @@ if __name__ == '__main__':
                 predps_lst.append("stable")
     df[f'predps_results_{i}'] = predps_lst
     df.to_csv(output_path, index=False)
-

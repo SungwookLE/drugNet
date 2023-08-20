@@ -1,32 +1,24 @@
-# PredPS #
 
-Source code for our paper "PredPS: attention-based graph neural network for predicting stability of compounds in human plasma"
+# DrugNet
 
-This code was built based on ChemProp (https://github.com/chemprop/chemprop) and CMPNN (https://github.com/SY575/CMPNN).
+Preparing the Dacon '23 "신약개발 AI"...    
+We are inspired by the paper "PredPS: attention-based graph neural network for predicting stability of compounds in human plasma" and took the baseline code structure below.
+ 1. https://bitbucket.org/krict-ai/predps/src/main/    
+ 2. https://github.com/chemprop/chemprop  
+ 3. https://github.com/SY575/CMPNN  
+ 
+## Pre-requirement
 
+This source code was developed in Ubuntu 20.04 LTS with Python v3.7 and PyTorch v1.7.1. And It has cuda of 10.1, cudnn of 7.6.3 version. You can install the proper pytorch(with gpu) version according to your cuda and cudnn version.
 
-##Procedure
+Create and activate conda environment
+```
+conda env create -f environment.yaml
+conda activate drugnet
+```
 
-**Note**:
-This source code was developed in Ubuntu 18.04.5 LTS with Python v3.7 and PyTorch v1.12.1.
-
-1. Clone the repository
-
-	git clone https://wdjang@bitbucket.org/krict-ai/predps.git
-
-2. Create and activate a conda environment
-
-	conda env create -f environment.yaml
-	
-	conda activate predps
-
-##Example
-
-- Run PredPS using sample input file
-
-	python PredPS_pred.py --test_path ./test_input.csv --preds_path output_results.csv 
-
-
-
-
-	
+## Example (not completed yet)
+- Run PredPS using sample input file  
+```
+python drugnet_pred.py --test_path ./test_input.csv --preds_path output_results.csv
+``` 
