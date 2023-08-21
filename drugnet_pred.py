@@ -15,6 +15,8 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', type=int,
                         choices=list(range(torch.cuda.device_count())),
                         help='Which GPU to use')
+    parser.add_argument('--no_cuda', action='store_true', default=False,
+                        help='Turn off cuda')
     parser.add_argument('--test_path', type=str,
                         help='Path to CSV file containing testing data for which predictions will be made',
                         default='../input/test.csv')
@@ -25,18 +27,17 @@ if __name__ == '__main__':
                         help='Directory from which to load model checkpoints'
                              '(walks directory and ensembles all models that are found)',
                         default='./ckpt')
-    parser.add_argument('--checkpoint_path', type=str,
-                        help='Path to model checkpoint (.pt file)')
-    parser.add_argument('--no_cuda', action='store_true', default=False,
-                        help='Turn off cuda')
 
     args = parser.parse_args()
     args.checkpoint_dir = 'predps_model'
     modify_predict_args(args)
+    print(args)
 
     output_path = args.preds_path
 
     df = pd.read_csv(args.test_path)
+    exit()
+
     pred, smiles = make_predictions(args, df.smiles.tolist())
     df = pd.DataFrame({'smiles':smiles})
     predps_lst = []

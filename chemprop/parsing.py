@@ -188,15 +188,6 @@ def update_checkpoint_args(args: Namespace):
 
     :param args: Arguments.
     """
-    if hasattr(args, 'checkpoint_paths') and args.checkpoint_paths is not None:
-        return
-
-    if args.checkpoint_dir is not None and args.checkpoint_path is not None:
-        raise ValueError('Only one of checkpoint_dir and checkpoint_path can be specified.')
-
-    if args.checkpoint_dir is None:
-        args.checkpoint_paths = [args.checkpoint_path] if args.checkpoint_path is not None else None
-        return
 
     args.checkpoint_paths = []
 
@@ -219,7 +210,6 @@ def modify_predict_args(args: Namespace):
     """
     assert args.test_path
     assert args.preds_path
-    assert args.checkpoint_dir is not None or args.checkpoint_path is not None or args.checkpoint_paths is not None
 
     update_checkpoint_args(args)
 
