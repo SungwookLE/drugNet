@@ -15,27 +15,30 @@ if __name__ == '__main__':
     parser.add_argument('--gpu', type=int,
                         choices=list(range(torch.cuda.device_count())),
                         help='Which GPU to use')
+    
     parser.add_argument('--no_cuda', action='store_true', default=False,
                         help='Turn off cuda')
+    
     parser.add_argument('--test_path', type=str,
                         help='Path to CSV file containing testing data for which predictions will be made',
-                        default='../input/test.csv')
+                        default='./input/test.csv')
+    
     parser.add_argument('--preds_path', type=str,
                         help='Path to CSV file where predictions will be saved',
-                        default='test_pred')
+                        default='./output/submission.csv')
+    
     parser.add_argument('--checkpoint_dir', type=str,
                         help='Directory from which to load model checkpoints'
                              '(walks directory and ensembles all models that are found)',
-                        default='./ckpt')
+                        default='./saved_model')
 
     args = parser.parse_args()
-    args.checkpoint_dir = 'predps_model'
     modify_predict_args(args)
-    print(args)
 
     output_path = args.preds_path
-
     df = pd.read_csv(args.test_path)
+
+    print(df)
     exit()
 
     pred, smiles = make_predictions(args, df.smiles.tolist())
@@ -50,3 +53,6 @@ if __name__ == '__main__':
                 predps_lst.append("stable")
     df[f'predps_results_{i}'] = predps_lst
     df.to_csv(output_path, index=False)
+
+
+    
