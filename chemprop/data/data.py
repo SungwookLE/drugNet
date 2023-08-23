@@ -65,6 +65,7 @@ class MoleculeDatapoint:
         # Create targets
         self.targets = [float(x) if x != '' else None for x in line[1:]]
 
+
     def set_features(self, features: np.ndarray):
         """
         Sets the features of the molecule.

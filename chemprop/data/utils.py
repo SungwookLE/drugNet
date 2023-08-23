@@ -125,6 +125,7 @@ def get_data(path: str,
 
     skip_smiles = set()
 
+   
     # Load data
     with open(path) as f:
         reader = csv.reader(f)
@@ -141,6 +142,9 @@ def get_data(path: str,
 
             if len(lines) >= max_data_size:
                 break
+        
+        for line in lines:
+            print(line)
 
         data = MoleculeDataset([
             MoleculeDatapoint(

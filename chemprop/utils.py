@@ -125,6 +125,7 @@ def load_scalers(path: str) -> Tuple[StandardScaler, StandardScaler]:
 
     scaler = StandardScaler(state['data_scaler']['means'],
                             state['data_scaler']['stds']) if state['data_scaler'] is not None else None
+    
     features_scaler = StandardScaler(state['features_scaler']['means'],
                                      state['features_scaler']['stds'],
                                      replace_nan_token=0) if state['features_scaler'] is not None else None

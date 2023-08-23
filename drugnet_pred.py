@@ -35,13 +35,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     modify_predict_args(args)
 
+
     output_path = args.preds_path
     df = pd.read_csv(args.test_path)
 
-    print(df)
-    exit()
-
-    pred, smiles = make_predictions(args, df.smiles.tolist())
+    pred, smiles = make_predictions(args, df.SMILES.tolist())
     df = pd.DataFrame({'smiles':smiles})
     predps_lst = []
     for i in range(len(pred[0])):
