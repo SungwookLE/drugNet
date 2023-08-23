@@ -54,13 +54,13 @@ def make_predictions(args: Namespace, smiles: List[str] = None) -> List[Optional
         test_data.normalize_features(features_scaler)
 
     # Predict with each model individually and sum predictions
-    # 우리의 문제: num_tasks = 2 (MLM, HML) 인, classification 문제 (8/23)
+    # 우리가 풀 문제: num_tasks = 2 (MLM, HML) 인, classification 문제 (8/23)
     if args.dataset_type == 'multiclass': 
         sum_preds = np.zeros((len(test_data), args.num_tasks, args.multiclass_num_classes)) 
     else:
         sum_preds = np.zeros((len(test_data), args.num_tasks)) ## 베이스의 샘플 테스터 코드는 classification으로 되어 있고, args.num_tasks도 1임
     
-    ####################################################### ('23.8/23)
+    ####################################################### ('23.8/23) 여기까지, 모델 불러오는 부분은 건드릴 필요 없는 것 같고, train 함수 쪽 손보러 ㄱㄱ
 
     print(f'Predicting with an ensemble of {len(args.checkpoint_paths)} models')
     for checkpoint_path in tqdm(args.checkpoint_paths, total=len(args.checkpoint_paths)):

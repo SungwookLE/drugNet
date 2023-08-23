@@ -39,7 +39,7 @@ if __name__ == '__main__':
     output_path = args.preds_path
     df = pd.read_csv(args.test_path)
 
-    pred, smiles = make_predictions(args, df.SMILES.tolist())
+    pred, smiles = make_predictions(args, df.SMILES.tolist()) ### << 여기 안에 작업 중임 (8/23)
     df = pd.DataFrame({'smiles':smiles})
     predps_lst = []
     for i in range(len(pred[0])):
