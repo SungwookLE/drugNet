@@ -22,6 +22,14 @@ from chemprop.utils import build_optimizer, build_lr_scheduler, get_loss_func, g
     makedirs, save_checkpoint
 
 
+"""
+Training
+To train a model, run:
+`chemprop_train --data_path <path> --dataset_type <type> --save_dir <dir>`
+
+where <path> is the path to a CSV file containing a dataset, <type> is one of [classification, regression, multiclass, spectra] depending on the type of the dataset, and <dir> is the directory where model checkpoints will be saved.
+"""
+
 def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     """
     Trains a model and returns test scores on the model checkpoint with the highest validation score.
@@ -51,6 +59,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     args.num_tasks = data.num_tasks()
     args.features_size = data.features_size()
     debug(f'Number of tasks = {args.num_tasks}')
+    exit() ## 여기까지 (8/26.., AlogP, Molecular_Weight 등의 다른 칼럼들을 feature에 넣을까 아님 별도로 관리해줄까?)
     
     
     # Split data

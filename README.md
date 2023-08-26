@@ -21,4 +21,5 @@ conda activate drugnet
 - Run PredPS using sample input file  
 ```
 python drugnet_pred.py --test_path ./input/test.csv --preds_path ./output/submission.csv
-``` 
+python drugnet_train.py --data_path ./input/train.csv --
+```

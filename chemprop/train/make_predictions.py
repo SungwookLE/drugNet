@@ -25,7 +25,7 @@ def make_predictions(args: Namespace, smiles: List[str] = None) -> List[Optional
 
     print('Loading prediction args')
     scaler, features_scaler = load_scalers(args.checkpoint_paths[0])
-    train_args = load_args(args.checkpoint_paths[0])
+    train_args = load_args(args.checkpoint_paths[0])  ## 모델 저장할때, 여러 모델  및 전체 시스템의 설정값도 같이 저장했음. state_load 해서 이러한 설정들도 불러오는 것임 (8/23)
 
     # Update args with training arguments
     for key, value in vars(train_args).items():
@@ -54,7 +54,7 @@ def make_predictions(args: Namespace, smiles: List[str] = None) -> List[Optional
         test_data.normalize_features(features_scaler)
 
     # Predict with each model individually and sum predictions
-    # 우리가 풀 문제: num_tasks = 2 (MLM, HML) 인, classification 문제 (8/23)
+    # 우리가 풀 문제: num_tasks = 2 (MLM, HML) 인, 'classification' 문제(멀티클래스 아님) (8/23)
     if args.dataset_type == 'multiclass': 
         sum_preds = np.zeros((len(test_data), args.num_tasks, args.multiclass_num_classes)) 
     else:

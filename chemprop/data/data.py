@@ -43,8 +43,15 @@ class MoleculeDatapoint:
         else:
             self.compound_name = None
 
-        self.smiles = line[0]  # str
-        self.mol = Chem.MolFromSmiles(self.smiles)
+        self.smiles = line[1]  # str
+        self.mol = Chem.MolFromSmiles(self.smiles) #double
+        self.AlogP = map(np.double, line[4]) #double
+        self.Molecular_Weight = map(np.double, line[5]) #double
+        self.Num_H_Acceptors = map(int, line[6]) #int
+        self.Num_H_Donors = map(int, line[7]) #int
+        self.Num_RotatableBonds = map(int, line[8]) #int
+        self.LogD = map(np.double, line[9]) #double
+        self.Molecular_PolarSurfaceArea = map(np.double, line[10]) #double
 
         # Generate additional features if given a generator
         if self.features_generator is not None:
@@ -63,7 +70,7 @@ class MoleculeDatapoint:
             self.features = np.where(np.isnan(self.features), replace_token, self.features)
 
         # Create targets
-        self.targets = [float(x) if x != '' else None for x in line[1:]]
+        self.targets = [float(x) if x != '' else None for x in line[2:4]]
 
 
     def set_features(self, features: np.ndarray):

@@ -88,7 +88,6 @@ def morgan_counts_features_generator(mol: Molecule,
 
     return features
 
-
 try:
     from descriptastorus.descriptors import rdDescriptors, rdNormalizedDescriptors
 

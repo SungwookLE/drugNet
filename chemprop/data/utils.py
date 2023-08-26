@@ -15,7 +15,7 @@ from .scaffold import log_scaffold_stats, scaffold_split
 from chemprop.features import load_features
 
 
-def get_task_names(path: str, use_compound_names: bool = False) -> List[str]:
+def get_task_names(path: str) -> List[str]:
     """
     Gets the task names from a data CSV file.
 
@@ -23,8 +23,15 @@ def get_task_names(path: str, use_compound_names: bool = False) -> List[str]:
     :param use_compound_names: Whether file has compound names in addition to smiles strings.
     :return: A list of task names.
     """
-    index = 2 if use_compound_names else 1
-    task_names = get_header(path)[index:]
+    MLM_index = 2
+    HLM_index = 3
+
+    readedeHeader = get_header(path)
+    task_names = [readedeHeader[MLM_index], readedeHeader[HLM_index]]
+
+    # 데이터셋의 형태가 맞아야 작동하게함 ('23.8/26)
+    assert task_names[0] == "MLM"
+    assert task_names[1] == "HLM"
 
     return task_names
 
@@ -108,9 +115,6 @@ def get_data(path: str,
         # Prefer explicit function arguments but default to args if not provided
         features_path = features_path if features_path is not None else args.features_path
         max_data_size = max_data_size if max_data_size is not None else args.max_data_size
-        use_compound_names = use_compound_names if use_compound_names is not None else args.use_compound_names
-    else:
-        use_compound_names = False
 
     max_data_size = max_data_size or float('inf')
 
@@ -145,7 +149,7 @@ def get_data(path: str,
         
         for line in lines:
             print(line)
-
+        
         data = MoleculeDataset([
             MoleculeDatapoint(
                 line=line,
