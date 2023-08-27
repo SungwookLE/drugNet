@@ -56,67 +56,26 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     debug('Loading data')
     args.task_names = get_task_names(args.data_path)
     data = get_data(path=args.data_path, args=args, logger=logger)
+    print(f"FPs calculated by {len(args.features_generator)}: the size is {data.features_size()}")
+
     args.num_tasks = data.num_tasks()
     args.features_size = data.features_size()
     debug(f'Number of tasks = {args.num_tasks}')
-    exit() ## 여기까지 (8/26.., AlogP, Molecular_Weight 등의 다른 칼럼들을 feature에 넣을까 아님 별도로 관리해줄까?)
+    ## 여기까지 (8/26.., AlogP, Molecular_Weight 등의 다른 칼럼들을 feature에 넣을까 아님 별도로 관리해줄까?)
     
     
     # Split data
     debug(f'Splitting data with seed {args.seed}')
-    if args.separate_test_path:
-        test_data = get_data(path=args.separate_test_path, args=args, features_path=args.separate_test_features_path, logger=logger)
-    if args.separate_val_path:
-        val_data = get_data(path=args.separate_val_path, args=args, features_path=args.separate_val_features_path, logger=logger)
+    test_data = get_data(path=args.separate_test_path, args=args, features_path=args.separate_test_features_path, logger=logger)
+    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
 
-    if args.separate_val_path and args.separate_test_path:
-        train_data = data
-    elif args.separate_val_path:
-        train_data, _, test_data = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
-    elif args.separate_test_path:
-        train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
-    else:
-        print('='*100)
-        train_data, val_data, test_data = split_data(data=data, split_type=args.split_type, sizes=args.split_sizes, seed=args.seed, args=args, logger=logger)
-
+    
     if args.dataset_type == 'classification':
         class_sizes = get_class_sizes(data)
         debug('Class sizes')
         for i, task_class_sizes in enumerate(class_sizes):
             debug(f'{args.task_names[i]} '
                   f'{", ".join(f"{cls}: {size * 100:.2f}%" for cls, size in enumerate(task_class_sizes))}')
-
-    if args.save_smiles_splits:
-        with open(args.data_path, 'r') as f:
-            reader = csv.reader(f)
-            header = next(reader)
-
-            lines_by_smiles = {}
-            indices_by_smiles = {}
-            for i, line in enumerate(reader):
-                smiles = line[0]
-                lines_by_smiles[smiles] = line
-                indices_by_smiles[smiles] = i
-
-        all_split_indices = []
-        for dataset, name in [(train_data, 'train'), (val_data, 'val'), (test_data, 'test')]:
-            with open(os.path.join(args.save_dir, name + '_smiles.csv'), 'w') as f:
-                writer = csv.writer(f)
-                writer.writerow(['smiles'])
-                for smiles in dataset.smiles():
-                    writer.writerow([smiles])
-            with open(os.path.join(args.save_dir, name + '_full.csv'), 'w') as f:
-                writer = csv.writer(f)
-                writer.writerow(header)
-                for smiles in dataset.smiles():
-                    writer.writerow(lines_by_smiles[smiles])
-            split_indices = []
-            for smiles in dataset.smiles():
-                split_indices.append(indices_by_smiles[smiles])
-                split_indices = sorted(split_indices)
-            all_split_indices.append(split_indices)
-        with open(os.path.join(args.save_dir, 'split_indices.pckl'), 'wb') as f:
-            pickle.dump(all_split_indices, f)
 
     if args.features_scaling:
         features_scaler = train_data.normalize_features(replace_nan_token=0)
@@ -248,6 +207,10 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             batch_size=args.batch_size,
             scaler=scaler
         )
+
+
+        exit() ### ('23.8/27, 여기까지 돌아가게끔 개발 완료)
+        
 
         test_scores, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc = evaluate_predictions(
             preds=test_preds,

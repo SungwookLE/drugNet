@@ -21,5 +21,5 @@ conda activate drugnet
 - Run PredPS using sample input file  
 ```
 python drugnet_pred.py --test_path ./input/test.csv --preds_path ./output/submission.csv
-python drugnet_train.py --data_path ./input/train.csv --
+python drugnet_train.py --data_path ./input/train.csv --features_generator morgan morgan_count --separate_test_path ./input/test.csv --dataset_type regression --metric mse --cuda --split_type random --features_scaling --ensemble_size 1
 ```
