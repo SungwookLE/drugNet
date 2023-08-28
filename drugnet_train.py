@@ -15,8 +15,8 @@ if __name__ == "__main__":
                         help='Path to CSV input file containing training data'
                        )
     parser.add_argument('--save_dir', type=str,
-                        default= "./output/train.csv",
-                        help='Path to CSV result(output) file containing training data'
+                        default= "./output",
+                        help='Path to result(output model.pt)'
                        )
     parser.add_argument('--num_folds', type=int,
                         default = 4,
@@ -41,11 +41,11 @@ if __name__ == "__main__":
     parser.add_argument('--metric', type=str,
                         default = "rmse",
                         help='Regression Loss Function')
-    parser.add_argument('--cuda', action='store_true',default=True,
+    parser.add_argument('--cuda', action='store_true',default=False,
                         help='Turn on cuda')
     parser.add_argument('--split_type', type=str,
                         default = "random", help="How to split the data")
-    parser.add_argument('--features_scaling', action='store_true', default=True,
+    parser.add_argument('--features_scaling', action='store_true', default=False,
                         help='Features Scaler')
     parser.add_argument('--ensemble_size', type=int, default=1,
                         help='ensemble_size')

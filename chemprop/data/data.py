@@ -44,7 +44,6 @@ class MoleculeDatapoint:
             self.compound_name = None
 
         if (len(line) == 11):
-
             self.smiles = line[1]  # str
             self.mol = Chem.MolFromSmiles(self.smiles) #double
             self.AlogP = map(np.double, line[4]) #double
@@ -54,6 +53,10 @@ class MoleculeDatapoint:
             self.Num_RotatableBonds = map(int, line[8]) #int
             self.LogD = map(np.double, line[9]) #double
             self.Molecular_PolarSurfaceArea = map(np.double, line[10]) #double
+
+            # Create targets
+            self.targets = [float(x) if x != '' else None for x in line[2:4]]
+
         
         elif (len(line) == 9):
             self.smiles = line[1]  # str
@@ -65,6 +68,9 @@ class MoleculeDatapoint:
             self.Num_RotatableBonds = map(int, line[6]) #int
             self.LogD = map(np.double, line[7]) #double
             self.Molecular_PolarSurfaceArea = map(np.double, line[8]) #double
+
+            # Create targets
+            self.targets = [None for x in range(2)]
         
 
         # Generate additional features if given a generator
@@ -83,9 +89,7 @@ class MoleculeDatapoint:
             replace_token = 0
             self.features = np.where(np.isnan(self.features), replace_token, self.features)
 
-        # Create targets
-        self.targets = [float(x) if x != '' else None for x in line[2:4]]
-
+       
 
     def set_features(self, features: np.ndarray):
         """

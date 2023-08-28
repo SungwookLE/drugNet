@@ -11,7 +11,7 @@ import torch
 import pickle
 from torch.optim.lr_scheduler import ExponentialLR
 
-from .evaluate import evaluate, evaluate_predictions
+from .evaluate import evaluate, evaluate_predictions, evaluate_regression
 from .predict import predict
 from .train import train
 from chemprop.data import StandardScaler
@@ -20,6 +20,7 @@ from chemprop.models import build_model
 from chemprop.nn_utils import param_count
 from chemprop.utils import build_optimizer, build_lr_scheduler, get_loss_func, get_metric_func, load_checkpoint,\
     makedirs, save_checkpoint
+import pandas as pd
 
 
 """
@@ -161,7 +162,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             )
             if isinstance(scheduler, ExponentialLR):
                 scheduler.step()
-            val_scores, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc = evaluate(
+            val_scores = evaluate_regression(
                 model=model,
                 data=val_data,
                 num_tasks=args.num_tasks,
@@ -176,13 +177,6 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             avg_val_score = np.nanmean(val_scores)
             debug(f'Validation {args.metric} = {avg_val_score:.6f}')
             writer.add_scalar(f'validation_{args.metric}', avg_val_score, n_iter)
-
-            avg_val_acc_score = np.nanmean(perfs_acc)
-            debug(f'Validation acc. = {avg_val_acc_score:.6f}')
-            avg_val_recall_score = np.nanmean(perfs_recall)
-            debug(f'Validation recall = {avg_val_recall_score:.6f}')
-            avg_val_specificity_score = np.nanmean(perfs_specificity)
-            debug(f'Validation specificity = {avg_val_specificity_score:.6f}')
 
             if args.show_individual_scores:
                 # Individual validation scores
@@ -208,11 +202,16 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             scaler=scaler
         )
 
-
-        exit() ### ('23.8/27, 여기까지 돌아가게끔 개발 완료)
+        outputCsv = pd.read_csv("./input/test.csv")
+        outputCsv.drop(["SMILES","AlogP","Molecular_Weight","Num_H_Acceptors","Num_H_Donors","Num_RotatableBonds","LogD","Molecular_PolarSurfaceArea"], axis='columns')
         
+        outputCsv["MLM"] = test_preds[:,0]
+        outputCsv["HLM"] = test_preds[:,1]
+        outputCsv.to_csv("./output/submission.csv")
+        exit() ### (8/28, 파일을 출력하는 형태로 종료 시킴, 임시로 프로그램 종료지점 설정)
 
-        test_scores, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc = evaluate_predictions(
+        
+        test_scores = evaluate_regression(
             preds=test_preds,
             targets=test_targets,
             num_tasks=args.num_tasks,
@@ -234,6 +233,8 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             for task_name, test_score in zip(args.task_names, test_scores):
                 info(f'Model {model_idx} test {task_name} {args.metric} = {test_score:.6f}')
                 writer.add_scalar(f'test_{task_name}_{args.metric}', test_score, n_iter)
+
+
 
     # Evaluate ensemble on test set
     avg_test_preds = (sum_test_preds / args.ensemble_size).tolist()

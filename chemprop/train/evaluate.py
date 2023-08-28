@@ -166,3 +166,35 @@ def evaluate(model: nn.Module,
         logger=logger
     )
     return results, perfs_acc, perfs_precision, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc
+
+
+def evaluate_regression(model: nn.Module,
+             data: MoleculeDataset,
+             num_tasks: int,
+             metric_func: Callable,
+             batch_size: int,
+             dataset_type: str,
+             scaler: StandardScaler = None,
+             logger: logging.Logger = None) -> List[float]:
+    """
+    Evaluates an ensemble of models on a dataset.
+
+    :param model: A model.
+    :param data: A MoleculeDataset.
+    :param num_tasks: Number of tasks.
+    :param metric_func: Metric function which takes in a list of targets and a list of predictions.
+    :param batch_size: Batch size.
+    :param dataset_type: Dataset type.
+    :param scaler: A StandardScaler object fit on the training targets.
+    :param logger: Logger.
+    :return: A list with the score for each task based on `metric_func`.
+    """
+    preds = predict(
+        model=model,
+        data=data,
+        batch_size=batch_size,
+        scaler=scaler
+    )
+
+    targets = data.targets()
+    return metric_func(targets, preds)
