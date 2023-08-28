@@ -203,11 +203,10 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
         )
 
         outputCsv = pd.read_csv("./input/test.csv")
-        outputCsv.drop(["SMILES","AlogP","Molecular_Weight","Num_H_Acceptors","Num_H_Donors","Num_RotatableBonds","LogD","Molecular_PolarSurfaceArea"], axis='columns')
-        
-        outputCsv["MLM"] = test_preds[:,0]
-        outputCsv["HLM"] = test_preds[:,1]
-        outputCsv.to_csv("./output/submission.csv")
+        outputCsv = outputCsv.drop(["SMILES","AlogP","Molecular_Weight","Num_H_Acceptors","Num_H_Donors","Num_RotatableBonds","LogD","Molecular_PolarSurfaceArea"], axis='columns')
+        outputCsv["MLM"] = np.array(test_preds)[:,0]
+        outputCsv["HLM"] = np.array(test_preds)[:,1]
+        outputCsv.to_csv("./output/submission.csv", index=False)
         exit() ### (8/28, 파일을 출력하는 형태로 종료 시킴, 임시로 프로그램 종료지점 설정)
 
         
