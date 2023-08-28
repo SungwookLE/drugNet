@@ -56,13 +56,13 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     debug('Loading data')
     args.task_names = get_task_names(args.data_path)
     data = get_data(path=args.data_path, args=args, logger=logger)
-    print(f"FPs calculated by {len(args.features_generator)}: the size is {data.features_size()}")
+    if args.features_generator is not None:
+        print(f"FPs calculated by {len(args.features_generator)}: the size is {data.features_size()}")
 
     args.num_tasks = data.num_tasks()
     args.features_size = data.features_size()
     debug(f'Number of tasks = {args.num_tasks}')
     ## 여기까지 (8/26.., AlogP, Molecular_Weight 등의 다른 칼럼들을 feature에 넣을까 아님 별도로 관리해줄까?)
-    
     
     # Split data
     debug(f'Splitting data with seed {args.seed}')

@@ -39,7 +39,7 @@ if __name__ == "__main__":
                         default = "regression",
                         help='MLM, HLM Prediction as Regression')
     parser.add_argument('--metric', type=str,
-                        default = "mse",
+                        default = "rmse",
                         help='Regression Loss Function')
     parser.add_argument('--cuda', action='store_true',default=True,
                         help='Turn on cuda')
@@ -69,7 +69,7 @@ if __name__ == "__main__":
                             help='undirected')
     parser.add_argument('--features_only', type=bool, default=False,
                             help='features_only')
-    parser.add_argument('--use_input_features', type=bool, default=True,
+    parser.add_argument('--use_input_features', action='store_true', default=False,
                             help='use_input_features: feature concat을 결정하는 파라미터')
     parser.add_argument('--ffn_num_layers', type=int, default=1,
                             help='ffn_num_layers')
