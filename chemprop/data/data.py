@@ -221,7 +221,7 @@ class MoleculeDataset(Dataset):
             self.scaler = scaler
 
         elif self.scaler is None:
-            features = np.vstack([d.features for d in self.data])
+            features = np.vstack([d.features for d in self.data]) # FPS 데이터의 같은 자리에 있는 데이터는 동일 특성이니까 그렇게 묶어서 노말라이제이션을 수행하였음 (8/30): 문제없음
             self.scaler = StandardScaler(replace_nan_token=replace_nan_token)
             self.scaler.fit(features)
 

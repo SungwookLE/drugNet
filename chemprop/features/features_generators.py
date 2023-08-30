@@ -45,11 +45,8 @@ def get_available_features_generators() -> List[str]:
     return list(FEATURES_GENERATOR_REGISTRY.keys())
 
 
-MORGAN_RADIUS = 2
-MORGAN_NUM_BITS = 2048
-
-
-@register_features_generator('morgan')
+## 나머지 기존 피쳐들도 이런식으로 불러와야 겠음 (8/30)
+@register_features_generator('AlogP')
 def morgan_binary_features_generator(mol: Molecule,
                                      radius: int = MORGAN_RADIUS,
                                      num_bits: int = MORGAN_NUM_BITS) -> np.ndarray:
@@ -69,7 +66,31 @@ def morgan_binary_features_generator(mol: Molecule,
     return features
 
 
-@register_features_generator('morgan_count')
+MORGAN_RADIUS = 2
+MORGAN_NUM_BITS = 2048
+
+
+@register_features_generator('morganFPS')
+def morgan_binary_features_generator(mol: Molecule,
+                                     radius: int = MORGAN_RADIUS,
+                                     num_bits: int = MORGAN_NUM_BITS) -> np.ndarray:
+    """
+    Generates a binary Morgan fingerprint for a molecule.
+
+    :param mol: A molecule (i.e. either a SMILES string or an RDKit molecule).
+    :param radius: Morgan fingerprint radius.
+    :param num_bits: Number of bits in Morgan fingerprint.
+    :return: A 1-D numpy array containing the binary Morgan fingerprint.
+    """
+    mol = Chem.MolFromSmiles(mol) if type(mol) == str else mol
+    features_vec = AllChem.GetMorganFingerprintAsBitVect(mol, radius, nBits=num_bits)
+    features = np.zeros((1,))
+    DataStructs.ConvertToNumpyArray(features_vec, features)
+
+    return features
+
+
+@register_features_generator('morganCountFPS')
 def morgan_counts_features_generator(mol: Molecule,
                                      radius: int = MORGAN_RADIUS,
                                      num_bits: int = MORGAN_NUM_BITS) -> np.ndarray:
