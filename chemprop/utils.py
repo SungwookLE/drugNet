@@ -91,16 +91,16 @@ def load_checkpoint(path: str,
 
     # Skip missing parameters and parameters of mismatched size
     pretrained_state_dict = {}
-    for param_name in loaded_state_dict.keys():
+    for idx, param_name in enumerate(loaded_state_dict.keys()):
 
         if param_name not in model_state_dict:
-            debug(f'Pretrained parameter "{param_name}" cannot be found in model parameters.')
+            debug(f'{idx}: Pretrained parameter "{param_name}" cannot be found in model parameters.')
         elif model_state_dict[param_name].shape != loaded_state_dict[param_name].shape:
-            debug(f'Pretrained parameter "{param_name}" '
+            debug(f'{idx}:  Pretrained parameter "{param_name}" '
                   f'of shape {loaded_state_dict[param_name].shape} does not match corresponding '
                   f'model parameter of shape {model_state_dict[param_name].shape}.')
         else:
-            # debug(f'Loading pretrained parameter "{param_name}".')
+            debug(f'{idx}: Loading pretrained parameter "{param_name}".')
             pretrained_state_dict[param_name] = loaded_state_dict[param_name]
 
     # Load pretrained weights

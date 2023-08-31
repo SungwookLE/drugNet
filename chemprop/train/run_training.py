@@ -68,7 +68,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     # Split data
     debug(f'Splitting data with seed {args.seed}')
     test_data = get_data(path=args.separate_test_path, args=args, features_path=args.separate_test_features_path, logger=logger)
-    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
+    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.9, 0.1, 0.0), seed=args.seed, args=args, logger=logger)
 
     
     if args.dataset_type == 'classification':
@@ -122,8 +122,11 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             writer = SummaryWriter(logdir=save_dir)
         # Load/build model
         if args.checkpoint_paths is not None:
-            debug(f'Loading model {model_idx} from {args.checkpoint_paths[model_idx]}')
-            model = load_checkpoint(args.checkpoint_paths[model_idx], current_args=args, logger=logger)
+            temp = list()
+            temp.append(args.checkpoint_paths)
+
+            debug(f'Loading model {model_idx} from {temp[model_idx]}')
+            model = load_checkpoint(temp[model_idx], current_args=args, logger=logger)
         else:
             debug(f'Building model {model_idx}')
             model = build_model(args)

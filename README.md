@@ -19,7 +19,15 @@ conda activate drugnet
 
 ## Example (not completed yet)
 - Run PredPS using sample input file  
+1) without Pretrained Weight, train the model with given features & SMILES
 ```
-python drugnet_train.py --data_path ./input/train.csv --features_generator morgan morgan_count --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features
-python drugnet_train.py --data_path ./input/train.csv --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 
+python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 80
+```
+2) with Pretrained Weight, train the model with given features & SMILES
+```
+python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 80 --checkpoint_paths saved_model/fold_0/model_0/model.pt
+```
+3) without Pretrained Weight, train the model using only SMILES
+```
+python drugnet_train.py --data_path ./input/train.csv --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --epochs 80
 ```

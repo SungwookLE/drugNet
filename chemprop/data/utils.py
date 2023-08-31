@@ -147,8 +147,8 @@ def get_data(path: str,
             if len(lines) >= max_data_size:
                 break
         
-        for line in lines:
-            print(line)
+        # for line in lines:
+        #     print(line)
         
         data = MoleculeDataset([
             MoleculeDatapoint(
