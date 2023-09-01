@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument('--seed', type=int,
-                        default = 40,
+                        default = 1213,
                         help='torch random seed')
     parser.add_argument('--data_path', type=str,
                         default= "./input/train.csv",
@@ -59,7 +59,7 @@ if __name__ == "__main__":
                             help='batch_size')
     parser.add_argument('--bias', type=bool, default=False,
                             help='bias')
-    parser.add_argument('--hidden_size', type=int, default=500,
+    parser.add_argument('--hidden_size', type=int, default=8,
                             help='hidden_size')
     parser.add_argument('--depth', type=int, default=5,
                             help='depth')
@@ -71,8 +71,6 @@ if __name__ == "__main__":
                             help='features_only')
     parser.add_argument('--use_input_features', action='store_true', default=False,
                             help='use_input_features: feature concat을 결정하는 파라미터')
-    parser.add_argument('--ffn_num_layers', type=int, default=1,
-                            help='ffn_num_layers')
     parser.add_argument('--init_lr', type=float, default=0.0001,
                             help='init_lr')
     parser.add_argument('--final_lr', type=float, default=0.0001,
@@ -85,7 +83,7 @@ if __name__ == "__main__":
                             help='epochs')
     parser.add_argument('--num_lrs', type=int, default=1,
                             help='num_lrs')
-    parser.add_argument('--minimize_score', type=bool, default=False,
+    parser.add_argument('--minimize_score', type=bool, default=True,
                             help='minimize_score')
     parser.add_argument('--no_cache', type=bool, default=False,
                             help='no_cache')
@@ -93,6 +91,10 @@ if __name__ == "__main__":
                             help='log_frequency')
     parser.add_argument('--show_individual_scores', type=bool, default=False,
                             help='show_individual_scores')
+    parser.add_argument('--ffn_num_layers', type=int, default=1,
+                            help='ffn_num_layers')
+    parser.add_argument('--ffn_hidden_size', type=int, default=64,
+                            help='ffn_hidden_size')
 
     args = parser.parse_args()
     cross_validate(args)

@@ -21,7 +21,7 @@ from chemprop.nn_utils import param_count
 from chemprop.utils import build_optimizer, build_lr_scheduler, get_loss_func, get_metric_func, load_checkpoint,\
     makedirs, save_checkpoint
 import pandas as pd
-
+import random
 
 """
 Training
@@ -48,10 +48,33 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     if args.gpu is not None:
         torch.cuda.set_device(args.gpu)
 
+    # # for reproducibility
+    # =============================================================================
+    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    # torch.manual_seed(args.seed)
+    # if device == 'cuda':
+    #     torch.cuda.manual_seed_all(args.seed)
+    # print(f"Torch Seed is {torch.seed()}")
+    # =============================================================================
+
     # Print args
-# =============================================================================
-#     debug(pformat(vars(args)))
-# =============================================================================
+    # =============================================================================
+    #     debug(pformat(vars(args)))
+    # =============================================================================
+
+    # Basic pre-processing data
+    debug('basic pre-processing data with data-curation')
+    data = pd.read_csv(args.data_path)
+    debug(f"Raw data shape: {data.shape}")
+
+    data.dropna(inplace=True, axis=0) # 1. 결측치 제거
+    data["MLM"] =data["MLM"].apply(lambda x: 100 if (x> 100) else x if (x >= 0) else 0) # 2. Outlier Bounding
+    data["HLM"] = data["HLM"].apply(lambda x: 100 if (x > 100) else x if (x >= 0) else 0)
+    data.drop_duplicates(["SMILES"], keep=False, inplace=True) # 3. 중복 데이터 제거
+    debug(f"Preprocessed data shape: {data.shape}")
+    temp_path = '.' + ''.join(args.data_path.split('.')[:-1]) + "_preprocessed.csv"
+    args.data_path = temp_path
+    data.to_csv(args.data_path, index=False)
 
     # Get data
     debug('Loading data')
@@ -133,6 +156,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
 
         debug(model)
         debug(f'Number of parameters = {param_count(model):,}')
+        debug(f"torch seed: {torch.seed()}")
         if args.cuda:
             debug('Moving model to cuda')
             model = model.cuda()
