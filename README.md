@@ -21,7 +21,7 @@ conda activate drugnet
 - Run PredPS using sample input file  
 1) without Pretrained Weight, train the model with given features & SMILES
 ```
-python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --ffn_num_layers 3 --hidden_size 8 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 25
+python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --ffn_num_layers 3 --hidden_size 8 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 80
 ```
 2) with Pretrained Weight, train the model with given features & SMILES
 ```
@@ -29,5 +29,5 @@ python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP
 ```
 3) without Pretrained Weight, train the model using only SMILES
 ```
-python drugnet_train.py --data_path ./input/train.csv --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --epochs 25
+python drugnet_train.py --data_path ./input/train.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 64 --epochs 50
 ```

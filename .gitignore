@@ -3,3 +3,8 @@ __pycache__
 output
 *.csv#
 /input/train_preprocessed.csv
+/input/train_out.csv
+/input/test_out.csv
+
+
+AutogluonModels

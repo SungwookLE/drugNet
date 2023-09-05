@@ -122,8 +122,7 @@ def load_scalers(path: str) -> Tuple[StandardScaler, StandardScaler]:
     :return: A tuple with the data scaler and the features scaler.
     """
     state = torch.load(path, map_location=lambda storage, loc: storage)
-    print(state) #: 저장된 모델의 설정값들과 파라미터들
-    exit()
+    # print(state) #: 저장된 모델의 설정값들과 파라미터들
 
     scaler = StandardScaler(state['data_scaler']['means'],
                             state['data_scaler']['stds']) if state['data_scaler'] is not None else None

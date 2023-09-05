@@ -72,8 +72,11 @@ class MoleculeDatapoint:
 
             # Create targets
             self.targets = [None for x in range(2)]
-        
 
+        else:
+            self.smiles = line[0]
+            self.mol = Chem.MolFromSmiles(self.smiles)
+        
         # Generate additional features if given a generator
         if self.features_generator is not None:
             self.features = []
