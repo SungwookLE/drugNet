@@ -21,12 +21,12 @@ def seed_everything(seed):
     os.environ["PYTHONHASHSEED"] = str(seed)
     torch.manual_seed(seed)
 
+# 아래코드에선 일단 사용치않았음
 def mol2fp(mol):
     fp = AllChem.GetHashedMorganFingerprint(mol, 6, nBits=4096)
     ar = np.zeros((1,), dtype=np.int8)
     DataStructs.ConvertToNumpyArray(fp, ar)
     return ar
-
 
 class CustomDataset(Dataset):
     def __init__(self, df, target, is_test=False):
