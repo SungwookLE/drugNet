@@ -93,7 +93,7 @@ if __name__ == "__main__":
                             help='show_individual_scores')
     parser.add_argument('--ffn_num_layers', type=int, default=1,
                             help='ffn_num_layers')
-    parser.add_argument('--ffn_hidden_size', type=int, default=64,
+    parser.add_argument('--ffn_hidden_size', type=int, default=512,
                             help='ffn_hidden_size')
 
     args = parser.parse_args()

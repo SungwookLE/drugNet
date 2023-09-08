@@ -8,7 +8,7 @@ from sklearn.metrics import auc, mean_absolute_error, mean_squared_error, precis
     roc_auc_score, accuracy_score, log_loss
 import torch
 import torch.nn as nn
-from torch.optim import Adam, Optimizer
+from torch.optim import Adam, Optimizer, AdamW
 from torch.optim.lr_scheduler import _LRScheduler
 
 from chemprop.data import StandardScaler
@@ -269,7 +269,7 @@ def build_optimizer(model: nn.Module, args: Namespace) -> Optimizer:
     """
     params = [{'params': model.parameters(), 'lr': args.init_lr, 'weight_decay': 0}]
 
-    return Adam(params)
+    return AdamW(params)
 
 
 def build_lr_scheduler(optimizer: Optimizer, args: Namespace, total_epochs: List[int] = None) -> _LRScheduler:

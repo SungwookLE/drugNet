@@ -63,18 +63,9 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     # =============================================================================
 
     # Basic pre-processing data
-    debug('basic pre-processing data with data-curation')
+    debug('basic pre-processing data')
     data = pd.read_csv(args.data_path)
-    debug(f"Raw data shape: {data.shape}")
-
-    data.dropna(inplace=True, axis=0) # 1. 결측치 제거
-    data["MLM"] =data["MLM"].apply(lambda x: 100 if (x> 100) else x if (x >= 0) else 0) # 2. Outlier Bounding
-    data["HLM"] = data["HLM"].apply(lambda x: 100 if (x > 100) else x if (x >= 0) else 0)
-    data.drop_duplicates(["SMILES"], keep=False, inplace=True) # 3. 중복 데이터 제거
-    debug(f"Preprocessed data shape: {data.shape}")
-    temp_path = '.' + ''.join(args.data_path.split('.')[:-1]) + "_preprocessed.csv"
-    args.data_path = temp_path
-    data.to_csv(args.data_path, index=False)
+    debug(f"Data shape: {data.shape}")
 
     # Get data
     debug('Loading data')
@@ -91,7 +82,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     # Split data
     debug(f'Splitting data with seed {args.seed}')
     test_data = get_data(path=args.separate_test_path, args=args, features_path=args.separate_test_features_path, logger=logger)
-    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.9, 0.1, 0.0), seed=args.seed, args=args, logger=logger)
+    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
 
     
     if args.dataset_type == 'classification':
@@ -102,6 +93,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
                   f'{", ".join(f"{cls}: {size * 100:.2f}%" for cls, size in enumerate(task_class_sizes))}')
 
     if args.features_scaling:
+        debug("feature scaling...")
         features_scaler = train_data.normalize_features(replace_nan_token=0)
         val_data.normalize_features(features_scaler)
         test_data.normalize_features(features_scaler)

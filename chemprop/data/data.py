@@ -44,51 +44,53 @@ class MoleculeDatapoint:
             self.compound_name = None
 
         self.others = dict()
-        if (len(line) == 11):
+        from rdkit.Chem import Descriptors
+
+
+
+        if (len(line) == 220):
             self.smiles = line[1]  # str
             self.mol = Chem.MolFromSmiles(self.smiles) #double
-            self.others["AlogP"] = np.double(line[4]) if line[4] is not '' else np.NaN #double
-            self.others["Molecular_Weight"] = np.double(line[5]) if line[5] is not '' else np.NaN #double
-            self.others["Num_H_Acceptors"] = int(line[6]) if line[6] is not '' else np.NaN #int
-            self.others["Num_H_Donors"] =  int(line[7]) if line[7] is not '' else np.NaN #int
-            self.others["Num_RotatableBonds"] = int(line[8]) if line[8] is not '' else np.NaN #int
-            self.others["LogD"] = np.double(line[9]) if line[9] is not '' else np.NaN #double
-            self.others["Molecular_PolarSurfaceArea"] = np.double(line[10]) if line[10] is not '' else np.NaN #double
+            idxArray = np.array(range(220))
 
+            for idx in idxArray[4:]:
+                self.others[idx] = np.double(line[idx]) #double
+                
             # Create targets
             self.targets = [float(x) if x != '' else None for x in line[2:4]]
 
         
-        elif (len(line) == 9):
+        elif (len(line) == 218):
             self.smiles = line[1]  # str
             self.mol = Chem.MolFromSmiles(self.smiles) #double
-            self.others["AlogP"] = np.double(line[2]) if line[2] is not '' else np.NaN #double
-            self.others["Molecular_Weight"] = np.double(line[3]) if line[3] is not '' else np.NaN #double
-            self.others["Num_H_Acceptors"] = int(line[4]) if line[4] is not '' else np.NaN #int
-            self.others["Num_H_Donors"] = int(line[5]) if line[5] is not '' else np.NaN #int
-            self.others["Num_RotatableBonds"] = int(line[6]) if line[6] is not '' else np.NaN #int
-            self.others["LogD"] = np.double(line[7]) if line[7] is not '' else np.NaN #double
-            self.others["Molecular_PolarSurfaceArea"] = np.double(line[8]) if line[8] is not '' else np.NaN #double
+            idxArray = np.array(range(218))
 
+            for idx in idxArray[2:]:
+                self.others[idx+2] = np.double(line[idx])  #double
+                
             # Create targets
             self.targets = [None for x in range(2)]
+
 
         else:
             self.smiles = line[0]
             self.mol = Chem.MolFromSmiles(self.smiles)
         
+
         # Generate additional features if given a generator
         if self.features_generator is not None:
             self.features = []
-
             for fg in self.features_generator:
-                if fg in ["AlogP", "Molecular_Weight", "Num_H_Acceptors", "Num_H_Donors", "Num_RotatableBonds", "LogD", "Molecular_PolarSurfaceArea"]:
-                    self.features.extend([self.others[fg]])
-                else:
-                    features_generator = get_features_generator(fg)
-                    if self.mol is not None and self.mol.GetNumHeavyAtoms() > 0:
-                        self.features.extend(features_generator(self.mol))
+                features_generator = get_features_generator(fg)
+                if self.mol is not None and self.mol.GetNumHeavyAtoms() > 0:
+                    self.features.extend(features_generator(self.mol))
+            self.features = np.array(self.features)
 
+        else:
+            self.features = []
+            for val in self.others.values():
+                self.features.extend([val])
+            
             self.features = np.array(self.features)
 
         # Fix nans in features

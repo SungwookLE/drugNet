@@ -75,6 +75,34 @@ class MoleculeModel(nn.Module):
                 nn.Linear(args.ffn_hidden_size, args.output_size),
             ])
 
+            ######################################################################
+            # mlp 사이즈를 수동으로 조절해본 것
+            # ffn = [
+            #     dropout,
+            #     nn.Linear(first_linear_dim, 1024)
+            # ]
+            # ffn.extend([
+            #     activation,
+            #     dropout,
+            #     nn.Linear(1024, 512),
+            # ])
+            # ffn.extend([
+            #     activation,
+            #     dropout,
+            #     nn.Linear(512, 256),
+            # ])
+            # ffn.extend([
+            #     activation,
+            #     dropout,
+            #     nn.Linear(256, 128),
+            # ])
+            # ffn.extend([
+            #     activation,
+            #     dropout,
+            #     nn.Linear(128, args.output_size),
+            # ])
+            ######################################################################
+
         # Create FFN model
         self.ffn = nn.Sequential(*ffn)
 
