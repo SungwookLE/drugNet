@@ -63,7 +63,7 @@ if __name__ == "__main__":
                             help='hidden_size')
     parser.add_argument('--depth', type=int, default=5,
                             help='depth')
-    parser.add_argument('--dropout', type=float, default=0.05,
+    parser.add_argument('--dropout', type=float, default=0.1,
                             help='dropout')
     parser.add_argument('--undirected', type=bool, default=False,
                             help='undirected')
@@ -71,11 +71,11 @@ if __name__ == "__main__":
                             help='features_only')
     parser.add_argument('--use_input_features', action='store_true', default=False,
                             help='use_input_features: feature concat을 결정하는 파라미터')
-    parser.add_argument('--init_lr', type=float, default=0.0001,
+    parser.add_argument('--init_lr', type=float,  default= 0.0001,
                             help='init_lr')
-    parser.add_argument('--final_lr', type=float, default=0.0001,
+    parser.add_argument('--final_lr', type=float, default=0.00002,
                             help='final_lr')
-    parser.add_argument('--max_lr', type=float, default=0.001,
+    parser.add_argument('--max_lr', type=float,   default=  0.003,
                             help='max_lr')
     parser.add_argument('--warmup_epochs', type=int, default=2,
                             help='warmup_epochs')
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                             help='no_cache')
     parser.add_argument('--log_frequency', type=int, default=10,
                             help='log_frequency')
-    parser.add_argument('--show_individual_scores', type=bool, default=False,
+    parser.add_argument('--show_individual_scores', action='store_true', default=False,
                             help='show_individual_scores')
     parser.add_argument('--ffn_num_layers', type=int, default=1,
                             help='ffn_num_layers')

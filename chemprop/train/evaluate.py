@@ -47,74 +47,9 @@ def evaluate_predictions(preds: List[List[float]],
 
     # Compute metric
     results = []
-    perfs_acc = []
-    perfs_specificity = []
-    perfs_recall = []
-    perfs_f1 = []
-    perfs_auroc = []
-    perfs_auprc = []
     for i in range(num_tasks):
         # # Skip if all targets or preds are identical, otherwise we'll crash during classification
-        if dataset_type == 'classification':
-            nan = False
-            if all(target == 0 for target in valid_targets[i]) or all(target == 1 for target in valid_targets[i]):
-                nan = True
-                info('Warning: Found a task with targets all 0s or all 1s')
-            if all(pred == 0 for pred in valid_preds[i]) or all(pred == 1 for pred in valid_preds[i]):
-                nan = True
-                info('Warning: Found a task with predictions all 0s or all 1s')
-
-            if nan:
-                results.append(float('nan'))
-                continue
-            
-            if type(valid_preds[i]) == torch.Tensor:
-                scores = valid_preds[i].cpu().detach().numpy()
-            else:
-                scores = np.array(valid_preds[i])
-            if type(valid_targets[i]) == torch.Tensor:
-                targets = valid_targets[i].cpu().detach().numpy()
-            else:
-                targets = np.array(valid_targets[i])
-            
-            fn = lambda x: 1 if x>0 else 0
-            np_preds = np.array([fn(x) for x in scores])
-
-            def np_sigmoid(x):
-                return 1./(1. + np.exp(-x))
-            
-            #perfs_acc.append(accuracy_score(targets, np_preds))
-            #perfs_precision.append(precision_score(targets, np_preds))
-            #perfs_recall.append(recall_score(targets, np_preds))
-
-
-            #hard_preds = [1 if p > 0.5 else 0 for p in np_preds]
-            hard_preds = [1 if p > 0.5 else 0 for p in scores]
-            
-            conf_mat = confusion_matrix(targets, hard_preds)
-            TN = conf_mat[0][0]
-            FN = conf_mat[1][0]
-            TP = conf_mat[1][1]
-            FP = conf_mat[0][1]
-            acc = float(TP+TN)/(TP+TN+FP+FN)
-            #perfs_acc.append(accuracy_score(targets, hard_preds))
-            perfs_acc.append(acc)
-            mcc = float((TP*TN)-(FP*FN))/(np.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN)))
-            PPV = float(TP)/(TP+FP)
-            sensitivity = float(TP)/(TP+FN)
-            specificity = float(TN)/(TN+FP)
-            #print("acc, sensi, spec: ", acc, sensitivity, specificity)
-            perfs_recall.append(sensitivity)
-            perfs_specificity.append(specificity)
-            perfs_f1.append(f1_score(targets, hard_preds))
-
-            try:
-                perfs_auroc.append(roc_auc_score(targets, np_sigmoid(scores)))
-                perfs_auprc.append(average_precision_score(targets, np_sigmoid(scores)))
-            except:
-                perfs_auroc.append(0.)
-                perfs_auprc.append(0.)
-
+  
         if len(valid_targets[i]) == 0:
             continue
 
@@ -124,7 +59,7 @@ def evaluate_predictions(preds: List[List[float]],
             results.append(metric_func(valid_targets[i], valid_preds[i]))
             #perfs_acc.append(accuracy_score(valid_targets[i], valid_preds[i]))
 
-    return results, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc
+    return results
 
 
 def evaluate(model: nn.Module,

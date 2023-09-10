@@ -22,11 +22,12 @@ def cross_validate(args: Namespace, logger: Logger = None) -> Tuple[float, float
     # Run training on different random seeds for each fold
     all_scores = []
     for fold_num in range(args.num_folds):
-        info(f'Fold {fold_num}')
+        info("===============================================================================================================================================================")
+        info(f'Fold {fold_num+1} / {args.num_folds}')
         args.seed = init_seed + fold_num
         args.save_dir = os.path.join(save_dir, f'fold_{fold_num}')
         makedirs(args.save_dir)
-        model_scores = run_training(args, logger)
+        model_scores = run_training(args, fold_num+1, logger)
         all_scores.append(model_scores)
     all_scores = np.array(all_scores)
 

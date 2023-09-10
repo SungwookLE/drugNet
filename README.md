@@ -32,5 +32,8 @@ python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP
 python drugnet_train.py --data_path ./input/train.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 64 --epochs 50
 ```
 
-4) 23.9/9
+4) 23.9/09
 python drugnet_train.py --data_path ./input/train_descriptor.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test_descriptor.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 512 --use_input_features --epochs 100
+
+5) 23.9/10
+python drugnet_train.py --data_path ./input/train_descriptor.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test_descriptor.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 512 --use_input_features --ensemble_size 4 --num_folds 5  --epochs 200 

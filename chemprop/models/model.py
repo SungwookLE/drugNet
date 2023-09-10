@@ -59,48 +59,46 @@ class MoleculeModel(nn.Module):
                 nn.Linear(first_linear_dim, args.output_size)
             ]
         else:
-            ffn = [
-                dropout,
-                nn.Linear(first_linear_dim, args.ffn_hidden_size)
-            ]
-            for _ in range(args.ffn_num_layers - 2):
-                ffn.extend([
-                    activation,
-                    dropout,
-                    nn.Linear(args.ffn_hidden_size, args.ffn_hidden_size),
-                ])
-            ffn.extend([
-                activation,
-                dropout,
-                nn.Linear(args.ffn_hidden_size, args.output_size),
-            ])
+            # ffn = [
+            #     dropout,
+            #     nn.Linear(first_linear_dim, args.ffn_hidden_size)
+            # ]
+            # for _ in range(args.ffn_num_layers - 2):
+            #     ffn.extend([
+            #         activation,
+            #         dropout,
+            #         nn.Linear(args.ffn_hidden_size, args.ffn_hidden_size),
+            #     ])
+            # ffn.extend([
+            #     activation,
+            #     dropout,
+            #     nn.Linear(args.ffn_hidden_size, args.output_size),
+            # ])
 
             ######################################################################
             # mlp 사이즈를 수동으로 조절해본 것
-            # ffn = [
-            #     dropout,
-            #     nn.Linear(first_linear_dim, 1024)
-            # ]
-            # ffn.extend([
-            #     activation,
-            #     dropout,
-            #     nn.Linear(1024, 512),
-            # ])
-            # ffn.extend([
-            #     activation,
-            #     dropout,
-            #     nn.Linear(512, 256),
-            # ])
-            # ffn.extend([
-            #     activation,
-            #     dropout,
-            #     nn.Linear(256, 128),
-            # ])
-            # ffn.extend([
-            #     activation,
-            #     dropout,
-            #     nn.Linear(128, args.output_size),
-            # ])
+            ffn = [
+                dropout,
+                nn.Linear(first_linear_dim, 512)
+            ]
+            ffn.extend([
+                activation,
+                nn.BatchNorm1d(512),
+                dropout,
+                nn.Linear(512, 256),
+            ])
+            ffn.extend([
+                activation,
+                nn.BatchNorm1d(256),
+                dropout,
+                nn.Linear(256, 128),
+            ])
+            ffn.extend([
+                activation,
+                nn.BatchNorm1d(128),
+                dropout,
+                nn.Linear(128, args.output_size),
+            ])
             ######################################################################
 
         # Create FFN model

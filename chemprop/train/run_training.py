@@ -31,7 +31,7 @@ To train a model, run:
 where <path> is the path to a CSV file containing a dataset, <type> is one of [classification, regression, multiclass, spectra] depending on the type of the dataset, and <dir> is the directory where model checkpoints will be saved.
 """
 
-def run_training(args: Namespace, logger: Logger = None) -> List[float]:
+def run_training(args: Namespace, fold_num: int, logger: Logger = None) -> List[float]:
     """
     Trains a model and returns test scores on the model checkpoint with the highest validation score.
 
@@ -106,6 +106,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
           f'train size = {len(train_data):,} | val size = {len(val_data):,} | test size = {len(test_data):,}')
 
     # Initialize scaler and scale training targets by subtracting mean and dividing standard deviation (regression only)
+    """ (9/10: target scaler 일단 뺴보자) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if args.dataset_type == 'regression':
         debug('Fitting scaler')
         train_smiles, train_targets = train_data.smiles(), train_data.targets()
@@ -114,6 +115,10 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
         train_data.set_targets(scaled_targets)
     else:
         scaler = None
+    """
+    scaler = None
+    ###################################################################################################################
+
 
     # Get loss and metric functions
     loss_func = get_loss_func(args)
@@ -127,7 +132,9 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
         sum_test_preds = np.zeros((len(test_smiles), args.num_tasks))
 
     # Train ensemble of models
+    best_score_arr = []
     for model_idx in range(args.ensemble_size):
+        debug(f"torch seed: {torch.seed()}")
         # Tensorboard writer
         save_dir = os.path.join(args.save_dir, f'model_{model_idx}')
         makedirs(save_dir)
@@ -143,12 +150,11 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             debug(f'Loading model {model_idx} from {temp[model_idx]}')
             model = load_checkpoint(temp[model_idx], current_args=args, logger=logger)
         else:
-            debug(f'Building model {model_idx}')
+            debug(f'Building model {model_idx+1}/{args.ensemble_size}')
             model = build_model(args)
 
         debug(model)
         debug(f'Number of parameters = {param_count(model):,}')
-        debug(f"torch seed: {torch.seed()}")
         if args.cuda:
             debug('Moving model to cuda')
             model = model.cuda()
@@ -166,7 +172,7 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
         best_score = float('inf') if args.minimize_score else -float('inf')
         best_epoch, n_iter = 0, 0
         for epoch in range(args.epochs):
-            debug(f'Epoch {epoch}')
+            debug(f'Epoch {epoch:3d} / {args.epochs}: learning rate is {scheduler.get_lr()[0]:.6f}')
 
             n_iter = train(
                 model=model,
@@ -209,8 +215,9 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
                 save_checkpoint(os.path.join(save_dir, 'model.pt'), model, scaler, features_scaler, args)        
 
         # Evaluate on test set using model with best validation score
-        info(f'Model {model_idx} best validation {args.metric} = {best_score:.6f} on epoch {best_epoch}')
+        info(f'Model {model_idx}/{args.ensemble_size} best validation {args.metric} = {best_score:.6f} on epoch {best_epoch}')
         model = load_checkpoint(os.path.join(save_dir, 'model.pt'), cuda=args.cuda, logger=logger)
+        best_score_arr.append(best_score)
         
         test_preds = predict(
             model=model,
@@ -219,50 +226,18 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
             scaler=scaler
         )
 
-        outputCsv = pd.read_csv("./input/test.csv")
-        outputCsv = outputCsv.drop(["SMILES","AlogP","Molecular_Weight","Num_H_Acceptors","Num_H_Donors","Num_RotatableBonds","LogD","Molecular_PolarSurfaceArea"], axis='columns')
-        outputCsv["MLM"] = np.array(test_preds)[:,0]
-        outputCsv["HLM"] = np.array(test_preds)[:,1]
-        outputCsv.to_csv("./output/submission.csv", index=False)
-        exit() ### (8/28, 파일을 출력하는 형태로 종료 시킴, 임시로 프로그램 종료지점 설정)
-
-        
-        test_scores = evaluate_regression(
-            preds=test_preds,
-            targets=test_targets,
-            num_tasks=args.num_tasks,
-            metric_func=metric_func,
-            dataset_type=args.dataset_type,
-            logger=logger
-        )
-
         if len(test_preds) != 0:
             sum_test_preds += np.array(test_preds)
 
-        # Average test score
-        avg_test_score = np.nanmean(test_scores)
-        info(f'Model {model_idx} test {args.metric} = {avg_test_score:.6f}')
-        writer.add_scalar(f'test_{args.metric}', avg_test_score, 0)
-
-        if args.show_individual_scores:
-            # Individual test scores
-            for task_name, test_score in zip(args.task_names, test_scores):
-                info(f'Model {model_idx} test {task_name} {args.metric} = {test_score:.6f}')
-                writer.add_scalar(f'test_{task_name}_{args.metric}', test_score, n_iter)
-
-
-
     # Evaluate ensemble on test set
     avg_test_preds = (sum_test_preds / args.ensemble_size).tolist()
+    outputCsv = pd.read_csv("./input/test.csv")
+    outputCsv = outputCsv.drop(["SMILES","AlogP","Molecular_Weight","Num_H_Acceptors","Num_H_Donors","Num_RotatableBonds","LogD","Molecular_PolarSurfaceArea"], axis='columns')
+    outputCsv["MLM"] = np.array(avg_test_preds)[:,0]
+    outputCsv["HLM"] = np.array(avg_test_preds)[:,1]
+    ensemble_scores = np.mean(best_score_arr)
+    outputCsv.to_csv(f"./output/submission_score{ensemble_scores:.2f}_fold{fold_num}.csv", index=False)
 
-    ensemble_scores, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc = evaluate_predictions(
-        preds=avg_test_preds,
-        targets=test_targets,
-        num_tasks=args.num_tasks,
-        metric_func=metric_func,
-        dataset_type=args.dataset_type,
-        logger=logger
-    )
 
     """
     # Average ensemble score
@@ -304,9 +279,5 @@ def run_training(args: Namespace, logger: Logger = None) -> List[float]:
     writer.add_scalar(f'ensemble_test_AUPRC', avg_auprc_test_score, 0)
     """
 
-    # Individual ensemble scores
-    if args.show_individual_scores:
-        for task_name, ensemble_score in zip(args.task_names, ensemble_scores):
-            info(f'Ensemble test {task_name} {args.metric} = {ensemble_score:.6f}')
 
-    return ensemble_scores, perfs_acc, perfs_specificity, perfs_recall, perfs_f1, perfs_auroc, perfs_auprc
+    return ensemble_scores
