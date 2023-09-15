@@ -46,12 +46,14 @@ class MoleculeDatapoint:
         self.others = dict()
         from rdkit.Chem import Descriptors
 
+        length_train_col = 215
+        length_test_col = 213
 
 
-        if (len(line) == 220):
+        if (len(line) == length_train_col):
             self.smiles = line[1]  # str
             self.mol = Chem.MolFromSmiles(self.smiles) #double
-            idxArray = np.array(range(220))
+            idxArray = np.array(range(length_train_col))
 
             for idx in idxArray[4:]:
                 self.others[idx] = np.double(line[idx]) #double
@@ -60,10 +62,10 @@ class MoleculeDatapoint:
             self.targets = [float(x) if x != '' else None for x in line[2:4]]
 
         
-        elif (len(line) == 218):
+        elif (len(line) == length_test_col):
             self.smiles = line[1]  # str
             self.mol = Chem.MolFromSmiles(self.smiles) #double
-            idxArray = np.array(range(218))
+            idxArray = np.array(range(length_test_col))
 
             for idx in idxArray[2:]:
                 self.others[idx+2] = np.double(line[idx])  #double

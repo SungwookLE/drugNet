@@ -8,7 +8,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
 
     parser.add_argument('--seed', type=int,
-                        default = 1213,
+                        default = 901213,
                         help='torch random seed')
     parser.add_argument('--data_path', type=str,
                         default= "./input/train.csv",

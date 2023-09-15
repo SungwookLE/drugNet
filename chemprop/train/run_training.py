@@ -82,7 +82,7 @@ def run_training(args: Namespace, fold_num: int, logger: Logger = None) -> List[
     # Split data
     debug(f'Splitting data with seed {args.seed}')
     test_data = get_data(path=args.separate_test_path, args=args, features_path=args.separate_test_features_path, logger=logger)
-    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.8, 0.2, 0.0), seed=args.seed, args=args, logger=logger)
+    train_data, val_data, _ = split_data(data=data, split_type=args.split_type, sizes=(0.9, 0.1, 0.0), seed=args.seed, args=args, logger=logger)
 
     
     if args.dataset_type == 'classification':
@@ -106,17 +106,18 @@ def run_training(args: Namespace, fold_num: int, logger: Logger = None) -> List[
           f'train size = {len(train_data):,} | val size = {len(val_data):,} | test size = {len(test_data):,}')
 
     # Initialize scaler and scale training targets by subtracting mean and dividing standard deviation (regression only)
-    """ (9/10: target scaler 일단 뺴보자) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if args.dataset_type == 'regression':
-        debug('Fitting scaler')
+        debug('Fitting scaler: target')
         train_smiles, train_targets = train_data.smiles(), train_data.targets()
         scaler = StandardScaler().fit(train_targets)
         scaled_targets = scaler.transform(train_targets).tolist()
         train_data.set_targets(scaled_targets)
     else:
         scaler = None
-    """
+
+    """ (9/10: target scaler 일단 뺴보자) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     scaler = None
+    """
     ###################################################################################################################
 
 

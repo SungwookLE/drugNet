@@ -23,17 +23,23 @@ conda activate drugnet
 ```
 python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --ffn_num_layers 3 --hidden_size 8 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 80
 ```
+
 2) with Pretrained Weight, train the model with given features & SMILES
 ```
 python drugnet_train.py --data_path ./input/train.csv --features_generator AlogP Molecular_Weight Num_H_Acceptors Num_H_Donors Num_RotatableBonds LogD Molecular_PolarSurfaceArea --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --features_scaling --ensemble_size 1 --use_input_features --epochs 25 --checkpoint_paths saved_model/fold_0/model_0/model.pt
 ```
+
 3) without Pretrained Weight, train the model using only SMILES
 ```
 python drugnet_train.py --data_path ./input/train.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 64 --epochs 50
 ```
 
 4) 23.9/09
+```
 python drugnet_train.py --data_path ./input/train_descriptor.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test_descriptor.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 512 --use_input_features --epochs 100
+```
 
 5) 23.9/10
-python drugnet_train.py --data_path ./input/train_descriptor.csv --ffn_num_layers 3 --hidden_size 256 --separate_test_path ./input/test_descriptor.csv --dataset_type regression --metric rmse --cuda --split_type random --ensemble_size 1 --ffn_hidden_size 512 --use_input_features --ensemble_size 4 --num_folds 5  --epochs 200 
+```
+python drugnet_train.py --data_path ./input/train_descriptor.csv --ffn_num_layers 3 --hidden_size 128 --separate_test_path ./input/test_descriptor.csv --dataset_type regression --metric rmse --cuda --split_type random --ffn_hidden_size 256 --use_input_features --ensemble_size 4 --num_folds 5 --init_lr 0.001 --final_lr 0.0001 --max_lr 0.01 --epochs 80
+```
