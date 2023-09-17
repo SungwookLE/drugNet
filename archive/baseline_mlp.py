@@ -57,12 +57,14 @@ class Net(nn.Module):
         # fc 레이어 3개와 출력 레이어
         self.fc1 = nn.Linear(input_size, hidden_size) 
         self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, hidden_size)
         self.fc_out = nn.Linear(hidden_size, out_size)
         
         # 정규화
         self.ln1 = nn.LayerNorm(hidden_size)
         self.ln2 = nn.LayerNorm(hidden_size)
-      
+        self.ln3 = nn.LayerNorm(hidden_size)       
+
         # 활성화 함수
         self.activation = nn.LeakyReLU()
         
@@ -80,6 +82,11 @@ class Net(nn.Module):
         out = self.activation(out)
         out = self.dropout(out)
         
+        out = self.fc3(out)
+        out = self.ln3(out)
+        out = self.activation(out)
+        out = self.dropout(out)
+
         out = self.fc_out(out)
         return out
 
@@ -100,14 +107,13 @@ def train(train_loader, valid_loader, model, criterion, optimizer, epochs):
         
         if epoch % 100 == 0:
             valid_loss = 0
-            model.eval()
             with torch.no_grad():
                 for inputs, targets in valid_loader:
                     output = model(inputs)
                     loss = criterion(output, targets)
                     valid_loss += loss.item()
                     
-            print(f'Epoch: {epoch}/{epochs}, Train Loss: {np.sqrt(running_loss/len(train_loader))}, Valid Loss: {np.sqrt(valid_loss/len(valid_HLM_loader))}')
+            print(f'Epoch: {epoch}/{epochs}, Train Loss: {running_loss/len(train_loader)}, Valid Loss: {(valid_loss/len(valid_HLM_loader))}')
             model.train()
     
     return model
@@ -142,7 +148,7 @@ if __name__ == "__main__":
     CFG = {'BATCH_SIZE': 256,
         'EPOCHS': 1000,
         'INPUT_SIZE': input_size,
-        'HIDDEN_SIZE': 256,
+        'HIDDEN_SIZE': 1024,
         'OUTPUT_SIZE': 1,
         'DROPOUT_RATE': 0.8,
         'LEARNING_RATE': 0.001}
